@@ -10,6 +10,14 @@ public class Entry {
     HashMap<String, Integer> score; //par pessoa que deu score e o score ex. Martim - 10. Score de 0 a 10
     ArrayList<String> tags; //ex. nsfw, martial arts, swords
 
+    public Entry(){}
+
+    public Entry(String title, String type, HashMap<String, Integer> score, ArrayList<String> tags){
+        this.title = title;
+        this.tags = tags;
+        this.type = type;
+        this.score = score;
+    }
 
     public String getTitle(){
         return this.title;

@@ -2,8 +2,12 @@ package com.example;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.lt;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+
+import java.util.Arrays;
+
 import com.mongodb.*;
 import org.bson.BsonDocument;
 import org.bson.BsonInt64;
@@ -12,12 +16,15 @@ import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.InsertOneResult;
 
 public class MongoHandler {
     
@@ -58,17 +65,35 @@ public class MongoHandler {
     }
 
     public Entry findByTitle(String s){
-        Entry entry = collection.find(eq("title", "Back to the Future")).first();
+        Entry entry = collection.find(eq("title", s)).first();
         return entry;
     }
 
-    // TODO findall 
-    // public Entry findAllByTitle(String s){
-    //     collection.
-    //     FindIterable<Entry> manyEntry = collection.find(eq("title", "Back to the Future"));
+    public MongoCursor<Entry> findAllByTitle(String s){
+        MongoCursor<Entry> manyEntry = collection.find(lt("title", s)).iterator();
+        return manyEntry;
+    }
 
-    //     return entry;
-    // }
+    public MongoCursor<Entry> findAllByType(String s){
+        MongoCursor<Entry> manyEntry = collection.find(lt("type", s)).iterator();
+        return manyEntry;
+    }
+
+    public MongoCursor<Entry> findAll(){
+        MongoCursor<Entry> manyEntry = collection.find().iterator();
+        return manyEntry;
+    }
+
+    public void printAll(){
+        MongoCursor<Entry> manyEntry = findAll();
+        while(manyEntry.hasNext()) {
+            System.out.println(manyEntry.next().toString());
+        }
+    }
+
+    public void addEntry(Entry e){
+        collection.insertOne(e);
+    }
 
     public void close(){
         monguito.close();
