@@ -36,6 +36,7 @@ public class MongoHandler {
     CodecRegistry pojoCodecRegistry;
 
     public MongoHandler(){
+        System.out.println("pila");
 
         pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
         pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));

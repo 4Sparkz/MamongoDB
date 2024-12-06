@@ -1,4 +1,4 @@
-package com.example;
+package com.mongodb.quickstart;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,50 +39,9 @@ public class Main {
     public static void main(String[] args) {
 
         mongoHandler();
-        // MongoHandler mh = new MongoHandler();
-        // Scanner sc = new Scanner(System.in);
-        // boolean loop = true;
-        // while (loop) {
-        //     String linha = sc.nextLine();
 
-        //     switch (linha) {
-        //         case "Add":
-        //             addFunction(mh);
-        //             break;
-        //         case "findAll":
-        //             findAll(mh);
-        //         case "exit":
-        //             loop = false;
-        //         default:
-        //             break;
-        //     }
-        // }
-        // sc.close();
     }
 
-    public static void addFunction(MongoHandler mh){
-        Scanner sc = new Scanner(System.in);
-        String titulo = sc.nextLine();
-        String tipo = sc.nextLine();
-        String tags1 = sc.nextLine();
-        ArrayList<String> tags = new ArrayList<>();
-        while(!tags1.equals("-")){
-            tags.add(tags1);
-            tags1 = sc.nextLine();
-        }
-        String pessoa = sc.nextLine();
-        int score = sc.nextInt();
-        HashMap<String, Integer> mapa = new HashMap<>();
-        mapa.put(pessoa, score);
-
-        Entry e = new Entry(titulo, tipo, mapa, tags);
-        mh.addEntry(e);
-        sc.close();
-    }
-
-    public static void findAll(MongoHandler mh){
-        mh.printAll();
-    }
 
 
 
@@ -95,7 +54,6 @@ public class Main {
         CodecRegistry codecRegistry ;
         MongoClient monguito;
 
-        System.out.println("1111");
         pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
         codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
 
@@ -105,21 +63,23 @@ public class Main {
                                                                 .build();
 
         try{
-            System.out.println("qqqq");
             monguito = MongoClients.create(clientSettings);
-            System.out.println("2222");
             database = monguito.getDatabase("mamongo");
             collection = database.getCollection("mamongo", Entry.class);
 
             //Testes
             HashMap<String, Integer> score = new HashMap<>();
-            score.put("daniel", 0);
+            score.put("dadasad", 10);
             ArrayList<String> listinha = new ArrayList<>();
-            listinha.add("aa");
-            listinha.add("bb");
-            Entry e = new Entry("pila", "genital", score, listinha);
+            listinha.add("ee");
+            listinha.add("ff");
+            Entry e = new Entry("pila", "buraco", score, listinha);
 
             addEntry(e, collection);
+
+            printAll(findAllByTitle("pila", collection));
+            // Entry e = findByTitle("pila", collection);
+            // System.out.println(e.getType());
 
 
         }catch(Exception e){
@@ -131,15 +91,15 @@ public class Main {
         return database.getCollection(collection);
     }
 
-    public MongoDatabase fetchDB(MongoClient monguito, CodecRegistry pojoCodecRegistry){
+    public static MongoDatabase fetchDB(MongoClient monguito, CodecRegistry pojoCodecRegistry){
         return monguito.getDatabase("mamongo").withCodecRegistry(pojoCodecRegistry); 
     }
 
-    public MongoCollection<Entry> fetchCollection(MongoDatabase database ){
+    public static MongoCollection<Entry> fetchCollection(MongoDatabase database ){
         return  database.getCollection("mamongo", Entry.class);
     }
 
-    public Entry findByTitle(String s, MongoCollection<Entry> collection){
+    public static Entry findByTitle(String s, MongoCollection<Entry> collection){
         Entry entry = collection.find(eq("title", s)).first();
         return entry;
     }
@@ -151,5 +111,16 @@ public class Main {
 
     public static void close(MongoClient monguito){
         monguito.close();
+    }
+
+    public static MongoCursor<Entry> findAllByTitle(String s,  MongoCollection<Entry> collection){
+        MongoCursor<Entry> manyEntry = collection.find(eq("title", s)).iterator();
+        return manyEntry;
+    }
+
+    public static void printAll(MongoCursor<Entry> manyEntry){
+        while(manyEntry.hasNext()) {
+            System.out.println(manyEntry.next().toString());
+        }
     }
 }
